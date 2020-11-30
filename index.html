@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--
+        TODO
+         - Clear form button
+         - Add links to social
+         - Save to cookie
+         - Edit
+         - Load from cookie
+         - Autofill and Jekyllify it for adding entries
+        -->
+        <meta name="viewport" content="user-scalable=no,initial-scale=1.0,maximum-scale=1.0" />
+        <title>Calorie Counter  - Alon Rotem</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <style>
+            .over-all {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height:100%;
+                /*background-color: white;*/
+            }
+
+            .linkcell
+            {
+                cursor: pointer;
+            }
+
+            .hidden {
+                display: none;
+            }
+            
+            .button-icon
+            {
+                fill: white;
+                position: relative;
+                top: 2px;                
+            }
+
+            .back-icon
+            {
+                fill: white;
+                position: relative;
+                top: 4px;
+            }
+
+            #btnAdd
+            {
+                margin: 10px 10px 10px 0px;
+            }
+
+            #btnBack
+            {
+                padding: 20px 0;
+            }
+
+            #main, #editor 
+            {
+                padding: 20px 2%;
+            }
+
+            #itemstable {
+                border-collapse: collapse;
+                width:100%;
+                font-size: 10pt;
+            }
+
+            #itemstable td {
+                border: 1px solid black;
+                padding: 10px;
+                border-spacing: 0;
+            }
+
+            #searchCalorieNinja {
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-left: 20px;
+                cursor: pointer;
+                height: 38px;  
+            }
+
+            .shadowed
+            {
+                filter: drop-shadow(2px 4px 6px black);
+            }
+
+            #nutronixsearch
+            {
+                margin-left: 20px;
+            }
+
+            .searching
+            {
+                filter: grayscale(1) !important;
+                cursor: not-allowed !important;
+            }
+
+            .txt-searching
+            {
+                background-color: orange !important;
+            }
+
+            .calculated
+            {
+                background-color: lightskyblue !important;
+            }
+
+            #copylink
+            {
+                top: 2px;
+                position: relative;
+                left: 10px;
+                fill: #0c5460;
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body class="bg-dark">
+        <div id="main" class="over-all bg-dark text-light">
+            <h1>Calories Calculator</h1>
+            <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
+                Total calories: <span id="totalCaloriesInTable">0</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="copylink" data-toggle="popover"  data-content="Copied to clipboard"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </div>
+            <div>
+                <button type="button" class="btn btn-success"  id="btnAdd">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="button-icon" width="18px" height="18px"><path d="M0 0h24v24H0z" fill="none"/><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>
+                    Add
+                </button>
+                <button type="button" class="btn btn-danger" id="btnClearAllItems">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="button-icon" width="18px" height="18px"><path d="M0 0h24v24H0z" fill="none"/><path d="M5 13h14v-2H5v2zm-2 4h14v-2H3v2zM7 7v2h14V7H7z"/></svg>
+                    Clear all
+                </button>
+            </div>
+            <div>
+                <table  id="itemstable" class="table table-striped table-dark table-hover">
+                      <tr class="table-light text-dark">
+                        <th scope="col" style="width: 40%">Item</th>
+                        <th scope="col" style="width: 18%">Cals/100g</th>
+                        <th scope="col" style="width: 18%">Weight</th>
+                        <th scope="col" style="width: 19%">Calories</th>
+                        <th scope="col" style="width: 5%"></th>
+                      </tr>
+                  </table>                
+            </div>
+        </div>
+        <div id="editor" class="over-all bg-dark text-light hidden">
+            <div id="btnBack" class="linkcell">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="back-icon" width="22px" height="22px"><path d="M0 0h24v24H0z" fill="none"/><path d="M21 11H6.83l3.58-3.59L9 6l-6 6 6 6 1.41-1.41L6.83 13H21z"/></svg>
+                Go back
+            </div>
+            <form style="margin-bottom: 40px;">
+                <div class="form-group">
+                  <label for="txtItemName">Item name (optional)</label>
+                  <div class="d-flex">
+
+                  <input type="search" class="flex-grow-1 form-control" id="txtItemName" placeholder="Enter item name...">
+                  <div class="align-content-center">
+                  <img  id="searchCalorieNinja" class="linkcell shadowed" />
+                </div>
+                  </div>
+                  <small id="txtItemNameHelp" class="form-text text-muted">
+                    Enter an item name, if it's already in the system, calories will auto-fill
+                  </small>                  
+                </div>
+                <div class="form-group">
+                    <img id="bbearch" class="linkcell shadowed" />
+                    <img id="nutronixsearch" class="linkcell shadowed" />
+                </div>
+                <div class="form-group">
+                    <label for="txtCalculatedCalories">Calculated calories (automatic)</label>
+                    <input type="text" class="form-control calculated" id="txtCalculatedCalories" placeholder="0"  readonly disabled>
+                    <small id="txtItemNameHelp" class="form-text text-muted">
+                      Calories for this item will be calculated here
+                    </small>                   
+                  </div>                
+                <div class="form-group">
+                  <label id="lblCalsPer100g" for="txtCalsPer100g">Calories per 100g</label>
+                  <input type="number" class="form-control" id="txtCalsPer100g" placeholder="0">
+                  <small id="txtCalsPer100gHelp" class="form-text text-muted">
+                    Enter calories per 100g for this item
+                  </small>                   
+                </div>
+                <div class="form-group">
+                    <label for="txtWeight">Weight</label>
+                    <input type="number" class="form-control" id="txtWeight" placeholder="0">
+                    <small id="txtItemNameHelp" class="form-text text-muted">
+                      Enter weight of this item
+                    </small>                   
+                </div>
+                <div class="form-group">
+                    <label for="txtBaseWeight">Base calculation weight in grams</label>
+                    <div class="form-row">
+                        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                        <input type="number" class="form-control" id="txtBaseWeight" placeholder="100" value="100">
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        <button type="button" class="btn btn-block btn-secondary"  id="btnConvertTo100">
+                            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24"  class="button-icon" width="18px" height="18px"><g><rect fill="none" height="24" width="24"/></g><g><g><path d="M9,12c0,1.66,1.34,3,3,3s3-1.34,3-3s-1.34-3-3-3S9,10.34,9,12z"/><path d="M8,10V8H5.09C6.47,5.61,9.05,4,12,4c3.72,0,6.85,2.56,7.74,6h2.06c-0.93-4.56-4.96-8-9.8-8C8.73,2,5.82,3.58,4,6.01V4H2v6 H8z"/><path d="M16,14v2h2.91c-1.38,2.39-3.96,4-6.91,4c-3.72,0-6.85-2.56-7.74-6H2.2c0.93,4.56,4.96,8,9.8,8c3.27,0,6.18-1.58,8-4.01V20 h2v-6H16z"/></g></g></svg>
+                            Convert to 100g
+                        </button>
+                        </div>                      
+                    </div>
+                    <small id="txtBaseWeightHelp" class="form-text text-muted">
+                      If the calorie measurement is not per 100g, enter the rght number here. Then click the button to convert the measure to 100g.
+                    </small>     
+                </div>
+
+                <div class="form-row">
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <button type="button" class="btn btn-block btn-success"  id="btnFormSave">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="button-icon" width="18px" height="18px"><path d="M0 0h24v24H0z" fill="none"/><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>
+                            Save
+                        </button>                        
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <button type="button" class="btn btn-block btn-danger"  id="btnFormCancel">
+                            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" class="button-icon" width="18px" height="18px"><g><rect fill="none" height="24" width="24"/><path d="M11.35,8.52L11,5h5V1h2v4h5l-1.38,13.79L11.35,8.52z M1,21v1c0,0.55,0.45,1,1,1h13c0.55,0,1-0.45,1-1v-1H1z M21.9,21.9 L2.1,2.1L0.69,3.51l5.7,5.7C3.28,9.87,1,11.99,1,15h11.17l2,2H1v2h15v-0.17l4.49,4.49L21.9,21.9z"/></g></svg>
+                            Cancel
+                        </button>                        
+                    </div>
+                </div>
+
+              </form>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>        
+        <script>
+            var searching = false;
+
+            window.onload = function(){ 
+                document.getElementById("searchCalorieNinja").setAttribute("src", calorieninja);
+                document.getElementById("bbearch").setAttribute("src", bbteamlogo);
+                document.getElementById("nutronixsearch").setAttribute("src", nutronixlogo);
+                document.getElementById("btnAdd").onclick = openEditor;
+                document.getElementById("btnClearAllItems").onclick = clearAllItems;
+                document.getElementById("btnBack").onclick = cancelform;
+                document.getElementById("btnFormCancel").onclick = cancelform;
+                document.getElementById("btnFormSave").onclick = formSave;
+                document.getElementById("searchCalorieNinja").onclick = ninjasearch;
+                document.getElementById("txtItemName").onsearch = ninjasearch;
+                document.getElementById("bbearch").onclick = bbteamsearch;
+                document.getElementById("nutronixsearch").onclick = nutronix_search;
+                document.getElementById("txtWeight").onkeyup = recalculateform;
+                document.getElementById("txtBaseWeight").onkeyup = recalculateform;
+                document.getElementById("btnConvertTo100").onclick = convertTo100;
+                document.getElementById("txtCalsPer100g").onkeyup = recalculateform;
+                $("#copylink").popover({ trigger:"manual" }).click(function() { 
+                    var pop = $(this); 
+                    pop.popover("show") 
+                    pop.on('shown.bs.popover',function() { 
+                    setTimeout(function() {
+                        pop.popover("hide")}, 2200); 
+                    });
+                    copycalories();
+                })                
+            }
+
+            function recalculateform()
+            {
+                var data = getFormData();
+                if(isNaN(parseInt(data.baseWeight)) || data.baseWeight <= 0)
+                {
+                    data.baseWeight = 100;
+                }
+                document.getElementById("lblCalsPer100g").textContent = "Calories per " + data.baseWeight + "g";
+                document.getElementById("txtCalsPer100gHelp").textContent = "Enter calories per " + data.baseWeight + "g for this item";
+                var calculated  = 0;
+                calculated = parseInt(data.calsPer100g * (data.weight / data.baseWeight));
+                if(isNaN(calculated))
+                {
+                    calculated = 0;
+                }
+                document.getElementById("txtCalculatedCalories").value = calculated;
+            }
+
+            function convertTo100()
+            {
+                var baseWeight = document.getElementById("txtBaseWeight");
+                var calsper100 = document.getElementById("txtCalsPer100g");
+                var baseWeightVal = parseInt(baseWeight.value);
+                var calsper100Val = parseInt(calsper100.value);
+                if(!isNaN(baseWeightVal) && baseWeightVal != 100)
+                {
+                    var ratio = 100 / baseWeightVal;
+                    if(!isNaN(calsper100Val))
+                    {
+                        calsper100.value = parseInt(calsper100Val * ratio);
+                    }
+                    baseWeight.value = 100;
+                }
+                recalculateform();
+            }
+
+            function ninjasearch(){
+                if(!searching)
+                {
+                    searching = true;
+                    var txtCalsPer100g = document.getElementById("txtCalsPer100g");
+                    var itemName = document.getElementById("txtItemName").value;
+                    var ninjaicon = document.getElementById("searchCalorieNinja");
+                    ninjaicon.classList.add("searching");
+                    txtCalsPer100g.classList.add("txt-searching");
+                    txtCalsPer100g.value = "0000000000";
+
+                    if(itemName)
+                    {
+                        itemName += " 100g";
+                        $.ajax({
+                            method: 'GET',
+                            url: 'https://api.calorieninjas.com/v1/nutrition?query=' + itemName,
+                            headers: { 'X-Api-Key': 'QXUPhIk1tLYxNgHiyCHpxQ==rsK6XNvftQmI8cHX'},
+                            contentType: 'application/json',
+                            success: function(result) {
+                                if(result && result.items && result.items.length > 0)
+                                {
+                                    document.getElementById("txtCalsPer100g").value = parseInt(result.items[0].calories);
+                                    document.getElementById("txtBaseWeight").value = parseInt(result.items[0].serving_size_g);
+                                }
+                                //console.log(result);
+                                searching = false;
+                                txtCalsPer100g.classList.remove("txt-searching");
+                                ninjaicon.classList.remove("searching");
+                                recalculateform();
+                            },
+                            error: function ajaxError(jqXHR) {
+                                console.error('Error: ', jqXHR.responseText);
+                                searching = false;
+                                ninjaicon.classList.remove("searching");
+                                txtCalsPer100g.classList.remove("txt-searching");
+                                document.getElementById("txtCalsPer100g").value = "0";
+                                document.getElementById("txtBaseWeight").value = "100";
+                                recalculateform();
+                            }
+                        });
+                    }
+                }
+            }
+
+            function bbteamsearch()
+            {
+                var url = "https://www.bb-team.org/search";
+                var itemName = document.getElementById("txtItemName").value;
+                if(itemName)
+                {
+                    itemName = itemName.trim().split(/\s+/).join("+");
+                    itemName += "+калории";
+                    url += "?q=" + itemName;
+                }
+                window.open(url);
+            }
+
+            function nutronix_search()
+            {
+                var url = "https://www.nutritionix.com/search";
+                var itemName = document.getElementById("txtItemName").value;
+                if(itemName)
+                {
+                    itemName += "%20100g";
+                    url += "?q=" + itemName;
+                }
+                window.open(url);
+            }
+
+
+            function parseNum(val)
+            {
+                var p = parseInt(val);
+                var isn = isNaN(p);
+                if(isn)
+                    return 0;
+                return p;
+            }
+
+            function getFormData()
+            {
+                return {
+                    itemName: document.getElementById("txtItemName").value,
+                    calculatedCalories: parseNum(document.getElementById("txtCalculatedCalories").value),
+                    calsPer100g: parseNum(document.getElementById("txtCalsPer100g").value),
+                    weight: parseNum(document.getElementById("txtWeight").value),
+                    baseWeight: parseNum(document.getElementById("txtBaseWeight").value)
+                };
+            }
+
+            function formSave()
+            {
+                var formData = getFormData();
+                add(formData.itemName, formData.calsPer100g, formData.weight, formData.calculatedCalories);
+                clearform();
+                closeform();
+            }
+
+            function openEditor()
+            {
+                var editor = document.getElementById("editor");
+                editor.classList.remove("hidden");
+                document.getElementById("txtItemName").focus();
+            }
+
+            function cancelform()
+            {
+                clearform();
+                closeform();
+            }
+
+            function closeform()
+            {
+                var editor = document.getElementById("editor");
+                editor.classList.add("hidden");
+            }
+
+            function clearform(){
+                document.getElementById("txtItemName").value = "";
+                document.getElementById("txtCalculatedCalories").value = "0";
+                document.getElementById("txtCalsPer100g").value = "";
+                document.getElementById("txtWeight").value = "";
+                document.getElementById("txtBaseWeight").value ="100";
+            }
+
+            function add(itemname, calsper100, weight, calculatedcals){
+                var table = document.getElementById("itemstable");
+                var row = table.insertRow(-1);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                cell1.innerHTML = itemname;
+                cell2.innerHTML = calsper100;   
+                cell3.innerHTML = weight;                
+                cell4.innerHTML = calculatedcals;
+                cell4.classList.add("calculated");
+                cell2.classList.add("text-right");
+                cell3.classList.add("text-right");
+                cell4.classList.add("text-right");
+                cell4.classList.add("text-dark");
+
+                let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("viewBox", "0 0 24 24");
+                svg.setAttribute("version", "1.1");
+                svg.setAttribute("width", "18");
+                svg.setAttribute("height", "18");
+                svg.setAttribute("fill", "white");
+                svg.setAttribute("aria-hidden", "true");
+                let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("fill-rule", "evenodd");
+                path.setAttribute("d", icon_delete_item.replaceAll(/\s/g, ""));
+
+                svg.appendChild(path);
+                cell5.appendChild(svg);
+                
+                cell5.classList.add("text-center");
+                cell5.classList.add("linkcell");
+                cell5.title = "Remove row";
+                cell5.onclick = deleterow;
+                recalulatetable();
+             }
+
+            function deleterow(e){
+                var targetElement = e.target;
+                while ((targetElement) && (targetElement.tagName.toUpperCase() != "TR")){
+                    targetElement = targetElement.parentElement;
+                }
+                targetElement.parentElement.removeChild(targetElement);
+                recalulatetable();
+            }
+
+            function clearAllItems(){
+                var table = document.getElementById("itemstable");
+                while (table.rows.length > 1)
+                {
+                    table.deleteRow(-1);
+                }
+                recalulatetable();
+            }
+
+            function recalulatetable()
+            {
+                var total = 0;
+                var table = document.getElementById("itemstable");
+                for (var i = 1, row; row = table.rows[i]; i++) {
+                    total += parseNum(row.cells[3].textContent);
+                }
+                document.getElementById("totalCaloriesInTable").textContent = total;
+            }
+
+            function copycalories()
+            {
+                copyToClipboard(document.getElementById("totalCaloriesInTable").textContent);
+            }
+
+            function copyToClipboard(text) {
+                if (window.clipboardData && window.clipboardData.setData) {
+                    // IE specific code path to prevent textarea being shown while dialog is visible.
+                    return clipboardData.setData("Text", text); 
+
+                } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+                    var textarea = document.createElement("textarea");
+                    textarea.textContent = text;
+                    textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+                    } catch (ex) {
+                        console.warn("Copy to clipboard failed.", ex);
+                        return false;
+                    } finally {
+                        document.body.removeChild(textarea);
+                    }
+                }
+            }
+
+            var icon_delete_item = "M11.35,8.52L11,5h5V1h2v4h5l-1.38,13.79L11.35,8.\
+                52z M1,21v1c0,0.55,0.45,1,1,1h13c0.55,0,1-0.45,1-1v-1H1z M21.9,21.9 L2.1\
+                ,2.1L0.69,3.51l5.7,5.7C3.28,9.87,1,11.99,1,15h11.17l2,2H1v2h15v-0.17l4.49\
+                ,4.49L21.9,21.9z";
+
+            var favIcon = "\
+                iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADA0lEQVQ4T4WTbUhTURjH\
+                /2elLufV3c12l9vyjbYUU6yZlplgJCS9UQlG9cUPFRFEX/pgBEX4oaAXAukN/GZBUEGB\
+                vRBZyuRmpmjW1ObL2pZztl3n3XSR24l7V2El9Hw5D+d5nt95znn+h2CBWTIz6tPVqprU\
+                FKWWUEIWxiihdCYU8X+dDrcOOb80/4r9SiLr83MenDxQXW3iNMlS0KBjcf9lN4w6DUoL\
+                cuT8/adv4ETd1tkrLc+fd30c3QOAyoBCs/HsheO1DeduP0rYt8WKsoJcuYAfGMHeKis8\
+                PgGhyDdkpKsxE5qDw+2bv3znaWP/sPusDNhRUcRPTYdK7zYelU+ViiSTCiVz+wTk52TI\
+                PpOsxJuBUbQ86XzzuKOvTAZkrtQ6iioNWZIfmAhT3UqG+D6LVLNCRQAKwRsknIkhPpdI\
+                WX0yoVga622bGHG5/RYZUF2Z50hdsSSXEAJOpYRAYmCpApPhiHyqLjkBk5EwODIDgSqR\
+                uEyNCUfk07NXdrMMqCjL48+d2l1SXpKjSExSgc7PYtQtwuX2xh+bJGDc6UHLvRfQMDEc\
+                OlhLLzY96+rg7fErlFhM3fsqLGujWpYEAiJ2bS/F1WsPUWHWL5zkb59GQVva7b3dg651\
+                MmCt2cgf3lle4pybVQzZXbDkmSCt26yrFwVEYzR265Htbc+wO95BmV7TtzwpoXBVNgdh\
+                KoiZ9FTY3jnQVJ4vA5oHXSjQMEhUKLCBY3H9gxNT3773895AUfwNDFo+Ny1lvZVjSeuY\
+                F3UWI8Lfo+An/DKgyqSDMWUZLvV8Qk22Ht2TAh0Jhro6PP54B1Wb8t41HNtcTJb8Kd9F\
+                +5fkF6W0sam9p81mt/6cgqWPy1UXKhQEHJMGIRYGq1BhUgzKjL/3orEYfCPB/g5+KH4F\
+                k0EzvKbSYAIIEb6EqS6LIb5xkbIZkpCAf/coff/a43J5AnEdFK/OtDWfqd+oZuR/9F+b\
+                FmdRf765s3fQWS4DGIZJz9an3TQsZ7UEf/zif2AUFJ4pwT/mDR4RRfHrDwd9QyD8JNR9\
+                AAAAAElFTkSuQmCC";
+            var docHead = document.getElementsByTagName('head')[0];
+            var faviconlink = document.createElement('link');
+            faviconlink.rel = 'shortcut icon';
+            faviconlink.type = 'image/x-icon';
+            faviconlink.href = 'data:image/png;base64,'+favIcon;
+            docHead.appendChild(faviconlink);
+
+            var mobilefav = "\
+                iVBORw0KGgoAAAANSUhEUgAAAJgAAACYCAYAAAAYwiAhAAAAAXNSR0IArs4c6QAAAARnQ\
+                U1BAACxjwv8YQUAAAAJcEhZcwAACxMAAAsTAQCanBgAADUiSURBVHhe7V0HfFVF9v7Sey\
+                M9AVIIhBJ6bwoiYO+ubYtdd9dV7GX/7uquXVext7Whu+haECwoRRCl915CCTWNhPRe/ue\
+                bvLzce1/JfSkI+L7f78C7N+/NnTvnzDlnzpyZgRtuuOHGSQsPy/8nMlhHLyFPoRChXkI9\
+                haIt16FCwUI+QqcSaoXKhEqESoXyhTKFdlmuG4TqhRqFTlicyAIWLzRQaLDQ6UL9LPcob\
+                L9mUKiyhbYK/Si0Xmij5d4JhxNJwFiX7kJDhS4XGi0UIUTtRO3lhi2oxajljgktF/pUaK\
+                3QAaETQrOdCAJG05YmdJ3QWULpQr5CbriOGqGdQt8JvSe0W4im9lcJmrpRQjOE6Gewx7m\
+                p44ht+oHQSKFfzK34JTQYn0m/6nahC4TCLfccIjwkEAnR4YjtEoqk+CikJEQjMSYcoUEB\
+                CPL3Q6C/L7y9Ty3XrK6uHhVVNSivqkZJeSUO5xVh35F87M8+itzCEhzJL0JRaYXl2w5BQ\
+                SsSmiP0khD9Nd47bjieAsZnUZj+IEThSrbcs4G3lxfCQgIwtHcyxg7siX6pCega2wVR4c\
+                Hw8vx1u2P1DQ04WlSGQ7mF2Lr3CJZuzMTaHVkoLq1EXT39f7ugUO0TelmIWo1Cd1wE7Xg\
+                KGM3hk0IT1JUd+Pl4Y8zANEwa3hdnjuyHmIhQeBzPGp6EaBQxyTtWggUrt2Lh6m1YtnE3\
+                qmvrLH+1i8VCDwqtUFedjOPBPn8hOvB/E4oVsnlmdESI0lTXnj8OvbrHIsDP7eO3BZXVN\
+                dh1IBfvf/Wz0mz5xxguswE1V67QP4Q4EKgS6jR0toBRoB4QulkokDe0oO80YWhvJVgDe3\
+                aDr2gwM8gpKBZzwBF6E7y9PBEXGWa5Or6orqlDfpGekaFB/so/7AjQ/yop18tAdHgI/Hw\
+                dt1WNaLCNmQeVoC1eu0P5cnZAB+4toaeEKHCdgs4UMArXa0IXC9k8p19qIm77zSRlCikg\
+                rmD8jU/gUB5DP03oGhOBn/79kOXq+GLF5j246q9vWK6aMO2qKbjjqsmWq/bhxZnzMX3mP\
+                MtVE2Y+fitG9e9huXIMdsL5Yjpf+d9CbNt72HJXB2qzWUJ/EuoUIessj5lvz4pfJKQTrq\
+                AAP9xyyQS8/8gNOGtMf5eFyw3zYNueLW38gbT1zdLmbHsDyBvyiLxqXWLbgM7gLgOl/xZ\
+                iJN5aPt+ka0wXPHnbZbjz6qkyIuQ0ohvHA2zru6TN2fbU9gZzQh6RV+QZedeh6GgBo1l8\
+                UchmpNg7JQEv3ns1zh8/yKn/4EbngG3Otn/xnmsUL+yAPJsuRB52GDoyOsmshv8KTRGyd\
+                hJPDw9MGNYbL8mL9ZQRYkeATn5qYjT6piYo6i8DhPGDmWTRflRUVWP2jxuwbd8RK/FeQj\
+                SnRW3BkACd6Oa6kEZm9ECPrjGWb7QPdPD9RTi05Z8+JB1dQoMs33AN8VHhOGN4X+w5lIc\
+                DOQXGYBjN5AAhBmareaO9MGjLNoMjxEeE7hGylsmg6OgBPfD8nVepUMTJAA4eOIjQ4rJJ\
+                w/DsHVdYrk4NMIRx1wszsXzTHhW81YAy95wQ+dnqVEFr6CgTeaEQRyI6gR3WN1ns/uUnj\
+                XD9mkCekDfkkQHkIXnJabx2oyMEjBH6Z4V0Optxrel3X62cSi2my7A75YJ7dbRiyx7LX0\
+                99fLZwjc37894vAfKGPBogvDKAvKQWI2/bhfYKGKOJDNTpvEYGAv9x68VqctqNExvk0T+\
+                FV+SZAeQpp/baFTFuj5NPVfpboduErILKWMv9156DSSP6wsPOROLKLXttNBZ9HIYwOhJr\
+                tu3DC/+dpwKNzUTH2JGz3gzGjpitMWVUhpXGDezZ6u/MgoMG1kULPoPOe2fhife+xpwl6\
+                63tsGZ7lnVQRB7FRoYhJMhfBY1r66wT5mQeVRsnyZkx2ya0R4MxSfBhIZ2QXjJxqAjMcM\
+                vVL4es7AJlerTEe60h0N9PCbyWhvVNsfz15MTcpZt07cBrI8izi4V3BpC35DF53Sa0VcC\
+                YhXqHkM5DZC+88aLTnEbnE8Xuj5JhvJY6at7uZACda+P7nwiDIPLsJuFdX9sYGXlMXrdp\
+                UY2tDTMHJgzOFrJ6h1S1r973O5w1JsOuaTzeYE+998VPLFdNYKiBGunXBrNzt42NjZi7b\
+                DNue+Yj9VmDg0KMFDBh0SW0VYPdIKQbeozKSMVZY/ufEMLlRttA3p09doDipQHk9fVNH1\
+                1DW6SBT18pFKWuBExpZqS+o6LpWtBBNfoMnz7951bTcxh9LyzRxwm7hAYqH+tkwOUPvIa\
+                co0w8bUJcVDg+fYrhKdfhanrTkvW7cMdz/zGmZB8VYn7/XnVlEq5qMH6fIW3dkG+kSDyp\
+                M3CspFypdy1pG8sRKEg0BVo6WYSLoHBp31krbK6CwqRth9Y6JzXYyH42/CTPyXuXZMZVA\
+                WPNaIutv2OS4BWTR5pOFnTjxIfi6RQbnpLn5L1LmZ2uClh/Id1YdnB6Egb2sokEu3GSgz\
+                wdnM510DqQ95QB03BFwOivXSakE+spo/ohIqRplkir0kkOcsJdQkRokE69k5yFQToD9Oe\
+                M78Z7roBtYSzDGehzad+Z150BR/UiTxkANoC8pwyY9t1dcfLp1H8rZI2iMlti8VsPqAYg\
+                OK+mBWM8M5+41XJ18qIjQh5Mq2akXIt9cziF+8vCWb0obBNufsqYbbFK6FwhOv2twhVVw\
+                GiuLrA6pHeSOIzu+cZTFeTt4N42ZpLTGqYj+64IGPVlZNPHppgJwxK/9oWwpzLI2/GD04\
+                2xTcqAje10BFekY7yQ9ftccsZpBXdg9dQFeUseB+rXqVIGxjV9bB2uZFMwwzGu6aOIcVg\
+                wbrl0AsKCW5Y7HhabrU3tHSQmdPhJPlFM0KHn1In23VzNsODayfioMF0Zdpzo447W6sUB\
+                1ZwlG1BWqRvUUKvo1+o5gFn1w9lY7q5nTarv1yMRXz53+3Ef0blxfMGg9kV3v4St+nWVX\
+                EPJXSZbDROYlY4kIV0YPDk+yi1cvwKQx8kJ1lnBZlAWbLx/ezArIbRzOkPcHJpw49QHU6\
+                wMoCyY8n3MChinB3T+Gpc/ufHrQIItrykLpqaMzPpgtwhxbylr0tmIfqnoHtexac5unJj\
+                g+slVW5k5bQW35WSqPDdP6RDcJdS8Zbab3MQNyCgTrcKsiWQswh3wcqMZlBub7bjswayA\
+                0ea6BcyNZlAWTOVnmRUwN9xoE8xqJQ4jjEOJ3ws92vSxCROu7IkxF6VKqe1Qdo2NWPblX\
+                iz+mHHdFvgGeOOSaQOROognyLQdjQ2N+OTJtdi7SZ8MEBLhhxueHovAsPZt31lRXIN37l\
+                +K0mP6dJ7UAVG44sGh8PBsnyHYuyEfX0zfiJpK/T6sndn2gr8Lcbt5LZhi22qabXveltv\
+                9/CBkLSNtSDR+/+hIBIa2nUkVJTWY8feV2L2OR/PoMf7yNFx4Gzd/aTtys0rx5t0/oeSo\
+                YWtSeYtr/zkKGePbtwB2y09H8P7DK5pcYQ1Co/xxy7/GIza5fUvUZr+yCT99yvMV9OjEt\
+                uebTBTisTUuw5W5SC3IhTuFeJaQVcCK86uQ1CcayX1i4OPtCx9fIR+TxO/L/1uX5eDHT3\
+                YpTWNEweEyDDszFRHRIS2/sfeM5vuGv3t7+WDeB9uQuTbPRgCI8uJaDJmQgqDQwFbLsve\
+                36rIGfPnKRhQeKbeU2IKaqnp4+3hh0GnJ8G3+vbY8R8/hteW7hUcq8fkLa1Fbbbtdud22\
+                d1KW9br5e3LtoO15QeIGGi5nkLZFwBjB/Z/QOUK637NieaIhMkYnITIurOXFTFJuVhk+f\
+                noFSgoqLSXqUVdTLw1ZjcGn90BQcIDdMhwRhWvHqlx8Pn016uvsLxopzq+Ev78/+o3qDj\
+                9fP7vlOCJPT2/Mn7ENq+busds5yKIjmUXoOSgRialR8NUy3gRVVzRK26zEwZ32V6d3Ytt\
+                TgdBsMIOCFsul1SeuChh3VWNwjebR7gChrKgahzILkTGmG/yDfE25BFzjWZRXjnceXoz9\
+                250nSuYdLFY9OLV/DHz9zS00aZDG37U2GzMeE9NYaF94CTLp4K4ChIT7o2uvLvA0OddaV\
+                1uPn2ftxFdvrRNN5XiP+ob6Ruzdkodu6ZHoEh+s0mHMoLy4GnPeWIvlX1O7WG7aQSe2PR\
+                siUYhbbM4XslXRDuCKgPG7XA7MBZhOq16QXYada7IRnxKOyIQQpy/KF9y55gje+b/F2LN\
+                Jv9Gxr5iUuOgglJa3bMPN7+/bmo+cfUVKyIJCnS9Fo9As+XwH/vPkUhw9otfwIcKE0GBf\
+                VGiEola05Jblh9TvuqeLpmlFiMn8ue9uwOcvr0a1wfGOiggQzeaBmtoWqeD3t0r5AfLsp\
+                D5RrQpZ/qESfPj4z1j2VaYSUC26xfiguqYR2lV8HdX2dsCSmEFB+8zDHPSVcQBXBIwqkt\
+                v58Hg9K84an4y0pHDsPqDXnEX5FVi7cB8O7DwqTPKBt7cnvH294CVaoaa6Dsdyy5G5IRd\
+                fvLIKc95ch6OHbc37Feem490npmDBsgM4eqxF8zA3KyerCCu+3a16rZelbB8/L9WgZHTu\
+                gRJsWXoQM59ZjkX/24qKUv1e8T7ym8fuHIPrL8vAwuUHUV7ZcigZGZm5PgfrpP7UTj5+3\
+                uI/yTNE4MmU8pJqZIuAr/g2Ex+KVly3KMvG7MZGBuIdqXufHl3w46pDSos2o6q8Fpulbj\
+                tWZysB9JS6UJD5Hnw2zVTWtnyp9zYlXPu35yuB1yIj1Q/zXuyOkvIGrN+lH7C0t+1Zpws\
+                npSG1Wxgy99tYRK6u5ikh+9VVK3DeffR4U4gHKiiQkUMy4jHr5XNRLUz40yMLMX8pjym0\
+                hX+gDyJig5S2IZPINDKJL1pVYf+0uSnjkvDq389AcmIYflpzCDc/vAC7bV9W1SMozB8RM\
+                UEIEG3EMECtNGKpmMJj0tD024zwk8a+7tJ+eObe8SJoXvjoq+2464kfdZqyGSwvPDoQoZ\
+                EB8A9omoqtEmGkEJCRRsYT1IwvPHQ6rjm/j9oO6U4p+8PZ20WT2daFjI+Q8kO6iE8pgsz\
+                yKstqcEzMVnlxlRJoI9K7++LfD8Vj7MBAHMypxS1P5+D7lWV2v6tre3kW26O1tr90ak9M\
+                /6t4QVLepbd/g9WbslWn1oA7Ut/U9NE5zAoY8zU2C9EOK0SEBeGTN27CGYPFhDTWITu/H\
+                L+7dy6WrDqMBntvahJq0+CRXfHB02chXoSmGUtWH8Jtj/6AbXsKLXfaBuY3Tbt2CB68dQ\
+                TCRCAJJtX9Z84O3P3kjygqbd/et+EhfvjXgyJcF/S25ssVS5mPvbYSL324HvUGM+cqqLn\
+                euF+Ea0DLjkR5x+px/eNH8N3yMp25dBVeXh6YMjYZ7z01RZl3eHhj8aZ6XH7zWzhWpHO7\
+                mH3I9ZHO194JzJpIHmnMU9KsQZbJp/fHQ3ddDk+fQDTWliEk0BMXT05T2mG7CIHW5JhFb\
+                FQg7rlhGJ6X3h/JF/Tyg4dvF7FZVegu/sRFZ6YhTzTTHtFktQ5Ggo5ATdcrOQIv/+0M3H\
+                rVAASJNvLwFkfbOwiejTUY2Dsapw3vigPZpdh/uMSuNnAGmpVJo7vjzccm49wJqWrBhId\
+                vhDzXG34+DarT9OsZiY078nGsxPXjgYIDPPHbs8Lw4d8TkZ4smtpynwiSv104PgSB/p7I\
+                PCjaVcymq0iQzvzI7aPxtGh1+qXw9INnSA+kpKZi+ZpM7NytO7GZcrNUqNW9T80K2FSh8\
+                4Ssw6q/3DgVI4emwcPLX5gkwlBfAV/vBoweHI+Jo7qhlGpeVHFFVa1TZrHXxIsjP3VcMl\
+                56eCIum9oLAeKPKMYHpcDTP0aeIS9cVyFC7CU9LAkZ4nwXivkoFr+qqsbxqI3gQCGla5g\
+                yiWy804YnyjPFVxPmewanwsMvsolZ9eXoFhesTHNSfCgO5ZapumsddHsIDvJBemoX/PXW\
+                kXjojyPRWz57iHB5BsRL/bur57CDeKEW/dIiMVnqTxPKjlImJsqMRktP8sXr98bhz5dFi\
+                IaUulvua+Hr44HRGQGYMjJYOncDikXIKqr1AwAjqGG7Sce9Unzd50Xrnn1ainQGKd87UL\
+                W9h0+YdBAPFB4rw7cLNlh+pUA54AY4q9WVE5g1kf8nxNO5rN//7pMHMXWiJqpeX42Giv1\
+                orKGfxBdrxGZxMn9ee1g5uZt3HcWRvDJUyoiNApQQE4z+vaJw+oiuGDs0AQN6RSth4yM8\
+                fEKF+SmqFzWjsbZYyhcfTwSNqBQ/a+XGHFX2yg3ZYjoLkFcgPpdotmBhIB3UQX1iVNmTR\
+                nVHt+awgIdoFv9YEYAE+dw8QmxEY3U+GsoPKnNPcFCxbN0RLFlzGCvWZ2PPwSIl1EQX8f\
+                l6dAvHKOlMpw1LxJghCU0mhZAyPYO6ieBySsvSXFJmQ+URNFbJSK2xQXU4tsWilQexXMr\
+                eIE78HhkkFRZV2XUvoiO8cM/VkZh2ZRfpxK2zjEXsPlSDResqcN8reSgua/H9qGmTE0Mx\
+                uG+MavuJI7s1dQpVrLS9bzg8A5OU9WjGvEWbMPUKju+sYCV5et5j6soJWq9tE1oXMAVhV\
+                E2xakgKRFM9zKJJsDyosdjr7VWNzKnOE4WQLwLNUaUL5XtIz/QJh4cIFnuoXTTUSNk58o\
+                wC9dkleIrZEm3o6R+nPttDo3SORgparXTCRr3DT8H6SAYC/3hlBbLERBshcoHThwThxTt\
+                jlR/WJBDOsXxzJcbekqWzIMMyYjHrtQuU1WgBBUu0lV+sEjAjvhcBO6uNAmbWRHIdE82k\
+                1UTSPI4YYlzgKxWlyZRKUr2yN3uouhhbQ65Fk8j43PJ9MVeB3USrxMlP+OIOWk9alX6TJ\
+                30bH00D2bQ2y5dX8xQ/i+X7xUj5XVvMrSMoIRTtyfLld033msvWCjPLF+0nZSlTLvVm/T\
+                38xF+0akVbeLA+bBthphJI0H41lc9/M3pG4Qzx4/YeLJHRYakutMFPWdm1WLimXLkKvWQ\
+                k6eNEm9XWNeLpjwqwerve37vx8gE4d2KPprqotpdOwbYXre6o4333wwbMXagzkewdPECr\
+                w0wkj4f5QsjK1QumDsWsD+5WKtcppKc2ivkU1SYkDapC0fIbqwCIKnbClFYhmqaxQcpvE\
+                NNm1QpSPoVXypeWk0trv3ARwlYpu7GedWf5FoeG5bHzUFiVGTfbjAawPPHPGhtkQMT6W4\
+                S4sLgGz76xCK+9v1B8WduZhyBx5n93dhie/FMMwoPtvxtN5Ll3H8SuAy2aODDAD2vmPoD\
+                ePUXLeoiAq7Z3rmMo5Bf/4V+Y8/1ayx0FDikvEdKfM2gHZjUYJ8B4aq11I4q8ghIMH9QD\
+                qUmtnMlDn6e5t3gFqF6iiNc0JW1mvgXUOsJkXdmW8inApmyJQ7AjUJAM5fOztWO0o3zWr\
+                bltNHUPDArBpNP6Y/Twnli/OQt5R/Umk9ppzY4qfLeiHCkJvuiRKMJiqMbM+SX4aC7dlB\
+                ZcdM4wXP/bqfDxDVI8MdP2P/y0Fc+9/jWqZMCjQZ4Q3aZWh8NmBYwFcZrAurNOtTjZOzI\
+                P49zJgxES3BKTcaNjwAFJcrdonDtlsIpB7d6Xq06y1SK3sA7zV5WjTEaNg3v5w9+3SWAq\
+                ZfR478u5OJjX8n1/fx/8ddrFGNiPS1zN4UjOMdx819vYu5/ypMN/hD5v+ugcZgWMYFCNG\
+                RTWhKbDUoHMPdkYOjAVEeHmJ2/dMAe2Z1hooIo5xseGY82GvSgzHK/MkMRPGyqw+2AtBq\
+                T5yQjXGz/L9aufF6GqpsWHSxJhffbv18DPz7owzCFoFjP35uD2h97HoqXbLHetYECM2os\
+                7T7cKVwSM0VvOQ+rOgtwlAjbrm9UoLq1QjREc5A9fH1H7blnrMHArS3bic84chJ2Z2Thw\
+                +KiMDPUDgG1Z1ZizpEwFZGk6OYLU4vYbz8LUM5i+Zx8srqy8Elt3HMIbHyzAtL/OwJqNd\
+                vf7fV6IGqylAk7gqhhwDfnrQnTwdAbc09MT4WHiP4gjaW9LAR8fLyR1jcaUif3VACEtNe\
+                4X2fqJav/7RRtV4HDLjoNG3+KER3FJBYqEDHODVgT4ybhd/qTVXkRUlxDV+Z2BU2YVldU\
+                oKq4QLWYZ0LSANzjQ+6OQqc3niLboGe6ww4lvmss2Df9690zAfbedj99eNl4J3vEAG2zV\
+                +r2Y9n8fYN3GfdozedxoHXTmuLslF2Dn8IZZtIW7ZUIcs1LArBvSuYKjhaWYt3izmNQAN\
+                RJtNdTRAeBo6KpbXpKByRFdfMkNU+AigGuF7KfLOEFbBIwajNsIjBBqs42rEw3y88qdOG\
+                N8BroltElOTePg4QJcd8cbynF1o03gPhRMlWeiIRWMaXScDyZefZA/Mwe81GcjqDVKxd9\
+                h7pgW11w2Fm8/fzMC/J1E2AU1NXVqIFFZWaO8Sx5yHhpCn8/574jn3/gGD/xjps4seonW\
+                DAtkrv7x9wNPVHC6ivwpr6qzNyfa6T4YOcH5J66R0yEyxA9nDkzEqJ4xSOgSiABhvhGVI\
+                iBLt+fizfk7dELGQO23Mx9Aelq85Y4efM0NW7Lw1oyF+HHZduzNylUT6XEx4Rg1NA03XD\
+                MRk07LUImDjjDuvEewdNVOyxWzCDwwdVA3XDkuVQmZG00gj44UVmBFZh4WbDyMAvu5cVw\
+                Ly3lpm1GAPbgiYGOEPhPSScL4ASm4aXIGokI80VhXK5qq3uEIp1ZGKa/N3YaFm49Y7jRp\
+                ooVfPIyxI2zPOaqsqsF7M3/Eg4/NRGkZsztty6UGu/rScXjq4asQGaHL5rYiJOU6XfwoN\
+                TYEj14xFGFBbuEygtEAD09v5JXV450F2/Hz5izLX6xgHIx75S9TV63AFQF7TYjqUYE/7J\
+                sSjxf+cjGiwoLQUC9qlaTmG+0LGPH2N6vxzrf6OdJFXz6MCWP6Wq6aQJP69ocLce+j/7U\
+                7H6eFt2gvarIX/vk7u6bWI+Yqy6cmDJZR7Gt3XOSO1dmBh4cnPL3EzfHyRkFJJe58eRa2\
+                7cs2Br3oJpk6mctsEzOHgynTXdWVIDTIH8/86UKM7GN+6oF4c/ZSvCGkhT0BY4zqvKufw\
+                f5D5sw9FzR89u6duOhs28MRjAI2rHd3vH3flZYrN5xh5fb9uO+12SjRzyAcEmLKtO0iCQ\
+                PMergcMer2URzcsytG2G7S32GgaWTEWosg0U4TBqdh8vB0xBkOnK8X8/vqO9+jqNj0kj0\
+                3TIA8Jq8NoCxQJlqFWQFj4ldLiqNgdL9kUaedZ2OYRam1tDxsftpvJuLJW87H4zedh6du\
+                vQCxXazTogrbdh5WIQk3Og7kMXltAGXB1GkfZgWMe2XqhmndY3UKrcNhjFmlxHfBOaP6w\
+                N/XR40YM1LjMHEwEzxakFdQoqZR3OhY2OE1ZcHU/qknbBCoukY/R0jB4ukizeA8ZrghTY\
+                jBW8PBTW78wjArYFyMqIuQHshtdUncLwPHA1g32gg7vKYsmFqgalbAOBeli7ot38rFBK5\
+                zsyP5b7csd+ihQ0Eek9cGUBZsNymzA7MCxjMCdWK8PvMQVu1wee6zQ/nvlqXOB3lMXhtA\
+                WaBMtAqzAsZ4x1dNH5tQWl6Flz9bgvwil+Y+OxRua9i5IG/JY/LaAMpCqzEwwhUn/yMh6\
+                /pxMnfrvmw8NmMe9ucU2l0w6sbJCfKSPCVvyWMDZykDlAVTcEXAuGWPzckOSzbsxs3Pfq\
+                Ii9Nv356KiysUFq+2A20R2LMg78pC8JE/JWzugDFAWTMFVHjlN1wkJ9Ie/n7fTVOjSiio\
+                h/Sy9vaki4/QO89I556lFR5blhgwNGxpQxa2vpF1/iXSdZrQ7ZdoIM0JhFh1ZlhtWtDll\
+                2hUT2Qw+4B4h3elI7QHnEbUwXrvxi4PLi8hzl1OC2yJg1GDPCZk6L9AMFv201Zonz7jLw\
+                p+2qM9unDBIFSLPyXuX0GE+mBEsODbAFz4Gf4ymPbuyGvUaGx8dGYr7/nI+zp8yBJu2Hs\
+                A//vWFStfRgmX5asoqrqlDiWGlM+GqiYz294V/J6VNV9bV42i1/WVxfGa4rze85Z2YoVs\
+                s78Lv23g+An4vRPzGzkCt+F25ljT0VtDpPhi5YDdl2h58PD3w/PB0/CbZesy3Qq005oU/\
+                bMDaAtstihwhRoRg9hmDkBrSNPdYWluPu9fsxOwDtqeBuCpg92Uk486+3e2uI2gP2IGe3\
+                bIfL2yz3Su3f0QwbunVFRPjIhDh5yPvU4fl+cV4e9dhLMsrsmH21SlxeGJoGgK82rJGxz\
+                k+3peLe6QtyReTcCll2pWuO0rIuglwMyYkRmHGxEEYEKlPnWGFn9+6H1v1e3sqwbsnIwl\
+                dTCxhJ8j4P/fuhqTglkWjM/flYO6hjknLeSfzMBbldPy86sLsQry/pyU1vBkXd4/BR+Mz\
+                cJl0vCjpOF7yfuG+Pjhb2vGdsX1xswieUdS/OJCHz233h2g3Nh8rkw6QZSNcA8WifCg8n\
+                Sh1sgPKAGXBFFzptrYp01KRry4Yja7BAdgqGuns2cuQo4n6UilcmBSHGVOGKsFqBl/oXT\
+                GBf1uxDSVOtsD0EzPyG2nw6WMzEOjd1Bf4nEvmrsYBB2nUX//3Ppx75mDLFVBeUY3gZC7\
+                pc4zh0eGYfd5IpU06AgVVNTj/qxVYr9HSfPsBUWGYI8+hRnaEImmPaxeux7wDubp8uNTQ\
+                QHx5zgj0DLe/7sBV1AgPfvv9Gny9X55juUfEB/njuwvHoI/w9pC08flzlmObvIdBv5lOm\
+                Tarc5kyPV3ImkYaLsx4feJgDI3lRrceiA30R2SAH344mC+Vb9Ge+0orMDS+C/pI43JvVB\
+                LzuYbERKB3lxBsOlqiGGJEtJT1oJjYh0f0QSh7uvyuQZ7zt5U78dMRxy6Av9Tr3DOHqMW\
+                8HDjM/GIpZs/lMTuOkV9VjRjpJKOlxzK/v7mebSF5MF7fkoVPdnO3bcsDBF3kHd6aNAQD\
+                Y8Lt/q6ZgkSbDYoWQdybg1JN56PPyfc/OzVBtZ+937pC34pgPbMuU+cL08/71/j+ODMpV\
+                vE0TNoyJTQI32bloEo/sufCn/eEbOaQjDArYKcJUQ1Yu96ZouofGpGuy2rtHxWKfSXl2C\
+                D+RDP4AnuKy3FRjwQEarYJoOnrIwL2B/F/xgljk0ICVe+ckBiNm/un4MXTB2BStxj4WTQ\
+                X8fPhAty3dLOOcUZw8461m/ahpKwCH3y8BE+9NEetqWwGaztenndYemdzMSyPmpF1jHCi\
+                Xcxgt7zrraKByjQDEG8RdnaUq8XUt7SWY8QE+kmH9RMtlifavomxrOsmqePkpBhlMdqDf\
+                Blk/VH8YGooLX4vvLhfOrXWH00NC8IKMfe79HPOZOTPQp23y/Rtg3pghOFQeFasuwjKd9\
+                I7ijUJg7liprqJgz5Ueq9WIAlfMYNpIlhndIvGBanxmCK9Z6D04ADppdqvHhMtd9/PW7B\
+                T/AYtaNao7puFhdFo7vjz9bz1WL1+j064CGqH508bIJqzGEc05pyONgVhotSDflFbUC29\
+                /PFVO/CjYS3BmPhIPDq6L0LsrBd1hCTRHNsKS7C9sOUUDnbWwqpaTJU28pf2aQsYoX9fB\
+                h4fbD+gM3vJYoKfE+1FE6kF+VUoI+G5WbqjZigHzKZodQtNs06+Tcp0moOplgyx3X/oo1\
+                8MwoZ5c/M+ZLUjnfl76c00v1qQYS+LM2rWL6EA0eyOELN+u3QQI2buPKTTvq5ide4x/E8\
+                GDUZMG5xmw7jWECrvds/QnqqjafG9dN4FhnZwBfuEB+SFcSrour7J6GdYSNMMO7xmpTo5\
+                ZdpBJycT7xrSE70Mi2Bpgl60P3naKnIrqvCEaIaqes3Sf+lZfxqQisvSEvGeDCL6i2A70\
+                zuRYvpeEM11qXyfmvYS+f9sQwglR57z2ModOh/SLKrq6vHPldtxVMxPM1ifi8Xsnp3scn\
+                xSYbAMPuguaE0WY2WPr9quzFxbMH39bp1WJOiqTBvcQ22nYBfOGrYVmBUwm5Tp3Ybwgxb\
+                B0vvuHdpLRn763vfJrsNYm2cqjcgKdrR/b92PTMPzaHJvkcanQA+XAcNn541SzKC5VeZV\
+                vkPzy8HHOcLgmWePwA0ZLatjOEJlR6DzrQXN29f7coyjJqfgd2ftOYLl4qtoERngq7QXn\
+                9UWMEj9Z+lEiQbtt6OwDO9JmxiUUKughv3UkDxIHt1HXjkJ5NrhdeenTM8XVe0oB4zMpW\
+                YZZliNUiC97pk1u1Bh51AoR9grg4ZXNuyxOrsEhepWESb6ewQ7eA9R4y9PGIivLxiD/5w\
+                1HO9OHooZU4bhCxG8T88dqXw87UwAcZo4++cYtBid86dX70Sxgwi8PXAU/MxaeS/RLs1g\
+                G1woI77RMoJuD+hk3ygdQ+sXUsO+JG2yX0boZlEubc62L6jUj9hHih99SVqCQyVFHpPXB\
+                lAWTJkjvYpxDJtdpqmih8d2QYoDX4y9tqtoma9EG9D5bQbVc5T07OFxETrVbw9HhXE3LV\
+                iHzWJetaDT/NjYfggy9Do6pNRI6REhaqDAOB1HXBRIe+DzqfHmclCiEahscf7LRVgmdI2\
+                ymeoyolwE8n4ZfHBgo0VaeBBemjBIhVvai15Sx5+PFKiRbzPYETJlZHeWOPxGP80I+sCv\
+                btyDl4W0YKjp5YkDxZ3RB8m1WHToKJ5fl2kMUxyHXablgTuOleLclDiHoyM6tnkiiFTNW\
+                mwpKMXAqDDVOx2hRsp/VrTCf3YeVGGEZlCoOAqkf9IRoBljL+UAQquPd0hH6C4jKwZHHf\
+                UD/m7G9oP4lzBAGw2nQD88orcaEbfWicwgSNqXHecb6aza5+wvqZSO7IUxCV2cjnznywD\
+                pwWVbdaET4iaxAn/ok+SwE7Gj3bJwPfbarpY/PrtMc5jPXjRETCHDBcYQBCveXxjEhinU\
+                BFMZEmCAdYRoMcZ7jL9jI76zNcvG7JBZ1/dLwq0D6Hu1za8xgmX2ltHTypxCYViLyaEZW\
+                i8jyt7Su6mljYLCCWoGKx9YukX3bvzWmd1j8c/RfVvVLGbBMhlGOFRWhQ1HW3xYCjjDLQ\
+                xws8Ma68i/r5N3+MvijTZCwkHYG2cMtvFBCf4uU74/7ceNWGy7N8hx3mVaBOxLcXBLamo\
+                R5uujHHw6182vGiL36CtRyLSjM8bGZu/NVoJCLcLfUpio7Z5asxNPiB9UZTiyj5H/D8Sv\
+                CpXvdiQoCP2jwpWjrhVoxvL4btSmXaSOEX6+qJPG3yIm+9VNe3CvmEbG57SIk0HFjKnDZ\
+                BDi4DykNoKdlf7SV/uydTMfNF2MUdFSUFhIFDQ65jO2H8BtizbahIcYsadwcRamGdSL1H\
+                CcFnpryz7ctWSTowHZL7TLtLwUbTpHJRzuagumRuIcpXZaohlsOGo/Bg7Zc/iSnJ/kZyM\
+                oCNR4nQFanuzySp0JaoaakJY60jwzpMtBSpH4bI7eJ0FcA4My6TCwYzJUYQTbn7EzCg8t\
+                Ar/DOmoHR83g+8RJHbXzw3wTamV2MP7OTvuzIJfTddoCBnVmC9ErZi3cdOoTeU2ety2g1\
+                wbQ4d8lZK8ybjr1iPuP6neaMYm2eKGU4nbvMu3GSYUTYJdpsefhoX4I9PcGdxvsJBfEjU\
+                4C1RQX21RU1aGopNq6RkKDNvlgrsgBBcpuynRibLA6E/vCST2QlhSO4EDb4+XcOLFBn76\
+                soga79xdh9sI9eO/zrTica1dZHd9dps+bPADP3j8BPboGiATWSU3NTwO5caJBxMHTWyTH\
+                B3sOVePepxbg6/kbLX+z4jjtMi0qavigVHXqbUJsqMhzrfQCClizX+jGSQfhqQfdcnVSs\
+                DeO5BSp025Xb9grbNXx1HTKtFkBs9llOiI8CJ/+e5o6BMGNUxcLl2zB5TdOV4eiatD5u0\
+                yPH9kbE8f1s1y5caqCPCavDaAsdO4u05Mn9D8up6S58cuCPCavDej8XaZ7pto/W8iNUw9\
+                2eE1ZMJXoZlYFcfacQ1Pr97//5EFMmTjAcmULxlQ2bz+An1bsxOKl29RnnvHN09J43Eti\
+                fAT69+mOCWP7YJyo4AF9u6v4mVnwHKOVa3ersleszVR75OfkF6G+rgHBwf7qkK3B/VOk7\
+                HScKX5it8RINTAxi6MFpeoArSXLt2PZmkzsycpFoWXBSZeIYPRIjsWYYT1x2ug+GDsiHV\
+                GGhcfOQIeZ+/kvEP+GRxqu37xPHbxeVlYFL29PxEWHo296IkYN7Snt0xcjuarbTtaDI7D\
+                tN207IGXvkPbZ3tT22dL20mb6tu+L8aPS1Wdnbc8zC6Ze8aTlSoEeP0NWj6krJzDb4hwx\
+                vChkTfx65anr8Ofrp1iuWsBVPBu27Me/Xv9GvWBufrHT3XL4YrHRYYpJ9/z5PAzKSFL7d\
+                zkCD7X67odNeOP9+Vi/JUs5n842I2ZZ3btG4eJzhuP6ayagd1qC5S/2wfp+OmelOidJMV\
+                2e5ww8ppjCfNPvJuHyC0aqd3EGHoj67n8XY9a3q3Hg0FHUGHK0tGCH4GBqcEYy/njtZHX\
+                mdnCQ48l+lsW2f+7Vr1XnMNv27OB3//Hcpra3k9v36rvzcNsDXAZpBSt9hxAjC05hdqqI\
+                6vBSIWs34gLVKy8ardMKPLSKL3fnwzOwav0ehyekacG/83vbdh7CV9+vRbUI6JAByfAzp\
+                OSwlGzRgNMe/hBPTp+llqaxR7YGLmMrLCrDctFC8xZvQlxMmKj8OJsey3rwO7c/9AFef2\
+                8+cvKKnDK/GfwOGfm99HIKfFpKLLomdLHRlvzeF9+sws13v42v561T2tDMnv58x30H8vD\
+                1/HXYJwJPbRYcHGCjGVTbv/YN7pL2cbXtt0rbz/lujVIOQwak6Nqe33l8+pfYudu6eyrB\
+                1No3hFpdF2kWHDVwaMoaK5Ke1bjw8/9rbMybqejI5tcaReU2SsNav9MWEqeycdJpGaq85\
+                rJJi7/8W2PfXol2f+MKScdovPe28xuLdr9jLbv2yEeN7710a2NYaKDd37hC4VIGy2KZze\
+                XzWXymt7en3d+4Qn3Tu6q2aC6bxLY6Y3w/1Xb2fmOWyDvyUNv25DF5bfguZUG/4MIBzGo\
+                w2ok+QkPUlaC6ug7bRd1zHwj6Kzfe+bbDfb38A30Q3TUUcUlhiOkehvDoQPjJvbqaetTV\
+                6nsxOx17KrdvGiNmMzwsSPlBN931lrEXKVBRBIf7I1bKjUsKR1RiKMIiA+Dt44ma6no01\
+                LM9WsA5trUb9ooGKZcheNMuPB9++jPu+OsMlJTa7nfhIaOoiJggxErd4+QZUQkhCI7wV6\
+                Or6koGli1ftKCquladDx4fG4GM3l3ViSX3/eO/ePP9Bai1s9jF29cLkXHBiEsOV23Dz4E\
+                hfqretdLGRuQXlCjzN6BfEpK6RivtdvNdb2PBj1tU2xnhStsTWQfzxWc7iHHS9tSeN4nG\
+                3Ztls/HK/yzUKsz6YAS3D/hUKEZdWUABY3La3IUbLHdaEBDsi/7jumHshelITI1AqDDe1\
+                89bGF+HkoJKHN57DEtn78Tmnw+isszW3F1z2Tg8cu+lOP+3zyrfRQsKVkhEAMZf3Fs9gw\
+                wKIeO9mhhfkF2G/dvy8dOsndi1Lls5/1r4+Hjhmb9djZ494nHDHW8qM6cFy6HQnn5ZH/Q\
+                ZkYjI+CbGExWl1ar87asO48fPtiP3QLGNINO3effFW7BTTPn9ImBG4aIz32tIvNQ/HUl9\
+                o1X5fgHeqpzSY1XIySpS7fLTrB1yXWkjPH16JmLOR/fgkWc/x38+4yp+Pdrb9mdPGqSSG\
+                L9ZsN5yxwpK2+VCS9RVK3BFwKjtOGp4QF21guR+0bjyntFIH5aghMER2HA71xzBx88tR9\
+                ZW/YplOpzcnO6wYb0h/adBE5Jw5b2jVe90hkbRWD9+vgOzX1+DY3n6vPQQ8WX8pNGpgbX\
+                wEa1yzvWDMOV3AxAU5jyDtry4GvM+3IRv392AWtEKWkTLyFJtqmvYA4Ia8cI/DsPpl/ZW\
+                GtIZ8g+V4ONnl2PD4v02Djt9vbyjJTbbI3RE2zvBU0KMKpiadDZrIgn2IU4XcW6IQTa7V\
+                adzmz40Hrc9PwVdezI0YPmDA/DvkWJ2Bp2WpF6yMKdFCNigRuZQs0y+pr8I1xiEC6NaA+\
+                vTvU8UUqTRMzfkKIFoBhlTYVgnGBjii6vuH6OeQfPSGnz9vdFzcJzUJRC71mbrhIxlG5l\
+                PU3vj4xMxZFKKqUB1UKgfMsZ0U+Xu25Kn02Q06Vqh68i2twM++TshKhjTOWGuCBjBGnAW\
+                nRuQMfpmEzxJEHXMBqR5ae0Fm8HvUaWnZMRgx6ojykTYA7836PRkXHXfmFY1ixZseJqgW\
+                DGja+bttTFnzaDZOusPAzH19wPks/mm8RSN2j09EjVV9di9MVdpTXugZrzxiTPQd2SiS7\
+                MgFOJUaZsje44hd7/j6b9ObHv2Gm52coOQ7eYbTuCqgBF8w7lCDF0MFLK+Chl06Z1DkTY\
+                4CrV1teJ3WKj5M//X3tf+TSgg1FvIB5uXHLLLpKAwX1z32FgEd/FtKcseacu13KsTiojz\
+                R4n4Mwe2i8m1IwNpg2Nw8V/E9/CF07Ks15q/1TXUIS4lRLTMURRm22oCmsJxl6RhvFBdf\
+                Z3TsnT3Lf97eDega69wrP5+nzj/ttZJ1/atlGXvnpO2p4r8QOhWIVNL1bRoi4ARdFroFX\
+                PPMKuA9RgUhQlXivX0anD8ctr72r9ZKDjCRwlAYbbtsvhRF6RgwMT4lt85Im25mnsUsvC\
+                YAGz+6TCqKwwjNHmLC/7UH7GpwS2/0ZahLav52vA3D+9GMave2LDI5vAocbL9ceFtA+AX\
+                7GmqLN1ny/9+QZ7ioFfhwDbbbSF0bW+iLJt7Qk7a/i6hNm39bVKRqnQd41Lq3wsxu9GKC\
+                Vf2xJiLUqVUs8XagTgZy77ci8UfZ1puNMFXRliXTBuI1EHRljttA3vnJ0+uxd5N+qzfkA\
+                g/3PD0WASKlmwPKopr8M79S8XU6He/SR0QhSseHNqqU98a9m7IxxfTN6KGIRINOrPtBcx\
+                intH00QpaslbTdcyCD6DedJObmukRoVZhfnbZDTfaALeAudFWUIu1CrMCxrGr7byCG79W\
+                UBacp5lYYNYjvFGIqRnWyGP/tK5ITzpuK8nd+AWxc38ONu/WjYy5lQAXAL2jrpzArIBNF\
+                polZA2d/+G8sXjk5ossV26cynjkzS/xwTdLLVcKDPRdLDRfXTmBWRPJ49x0cyobMw+aym\
+                dy4+QGebxxt018lbJgKhfMFQHLavrYhAM5Bdiyx6VZAzdOQpDH5LUBlAVT54WaFTCOGH5\
+                o+tiEotIKfLeMp26YGky4cRJCpWEt3aR4bcBCoQ4dRRLzhKy78TJxb9aitShv437tbpz4\
+                4EFisxavM26EQhmgLJiCKwLGY0N02We5hSWY8fVS1DlZWODGyQnydIY49nnCYwMoA85PF\
+                9PAFQHjJsDvCumkiaOLdTt07pkbpwDWbs8yjhwJpnFQBkwfsOmKgBE8eX5t08cm5B8rxY\
+                sfz0dBsUv7krlxAoO8fEl4St4aQN5TBkzD1XQdenuMuHEJm3UB3aG8Y9h9MBeTR/ZTZxm\
+                6cfKioqoGdz4/Ez9vsMmoYOSeOWGb1JVJtEUaaA8ThQYJWTVgVnYBsguKMLBnNwQHunay\
+                mBsnBnIKivHYO1/hu+WbYVhTydwgrrx9Rcglh7stAsYHcFeykUK6c/t27c/Fjv3ZSOsWi\
+                5iIEJWq7MaJDwoT412Pvj0bC1Zusxd6Ypr8NCGX87/aas84tOCocqKQNQOQFWVQ7vvlW9\
+                TRxsnxUep/N05cMMb1v/mr8OArn6k5R4PmIrYLMXO5TWcxtkfF8LfMyZ8plG65toJbC3S\
+                P64LfnDkCpw9JR1J8JAL82pct6kbHoLK6BvvFpflx3U78b8EqUQqFqLM93IGSxu3LrxKi\
+                xbKRPDPoCBvGA7JesvxvoxG5eiY+MhwpiVEY0jtZ+WjxUWEICvCTv7k6iHWjLWhoaFAB8\
+                eyjxWoOmWGlfYePKp/Zzm7SRPMqIm5w0uqxyccDdPrfFmJt3XTy01tC5OkJBTpbXFK+Uo\
+                ijDnsVd9OJS+QZeUcentCOM0eWtwltFWL01d7LuOnEIfKIvCLP9Kf5dwA6M44QKXSG0Fl\
+                CTFjkDtWd+Tw3zIOCxYA5Ewa5iHqRkE1OTkfgeDCcjj+j/j2EuAUUtyxmrjWzY90Cd3xA\
+                gWIWao7QDiGGHpgwSLNou0zcDTfccMMNAP8P5rny+dANSkgAAAAASUVORK5CYII=";
+            var mobilefavicon = document.createElement('link');
+            mobilefavicon.rel = 'apple-touch-icon';
+            mobilefavicon.sizes = '152x152';
+            mobilefavicon.href = 'data:image/png;base64,'+mobilefav;
+            docHead.appendChild(mobilefavicon);
+
+            var calorieninja = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAm\
+            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\
+            rkJggg==";
+
+            var bbteamlogo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAAaCA\
+            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\
+            1Isl65eVAAAAAElFTkSuQmCC";
+
+            var nutronixlogo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIIAAAAa\
+            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\
+            AElFTkSuQmCC";
+        </script>
+    </body>
+</html>
+
+<!--
+NO FOOD
+<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" fill="black" width="18px" height="18px"><g><rect fill="none" height="24" width="24"/><path d="M11.35,8.52L11,5h5V1h2v4h5l-1.38,13.79L11.35,8.52z M1,21v1c0,0.55,0.45,1,1,1h13c0.55,0,1-0.45,1-1v-1H1z M21.9,21.9 L2.1,2.1L0.69,3.51l5.7,5.7C3.28,9.87,1,11.99,1,15h11.17l2,2H1v2h15v-0.17l4.49,4.49L21.9,21.9z"/></g></svg>
+
+ALL CLEAR
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="18px" height="18px"><path d="M0 0h24v24H0z" fill="none"/><path d="M5 13h14v-2H5v2zm-2 4h14v-2H3v2zM7 7v2h14V7H7z"/></svg>
+
+DELETE
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="18px" height="18px"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+
+ADD
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="18px" height="18px"><path d="M0 0h24v24H0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 14h-3v3h-2v-3H8v-2h3v-3h2v3h3v2zm-3-7V3.5L18.5 9H13z"/></svg>
+-->
