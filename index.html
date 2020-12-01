@@ -18,7 +18,9 @@
         <meta property="og:title"              content="Calorie Calculator" />
         <meta property="og:description"        content="Easy search and calculate calories" />
         <meta property="og:image"              content="https://raw.githubusercontent.com/alonrotem/calorie-calculator/main/Logo.png" />        
-        
+        <meta property="og:image:width"         content="512" />
+        <meta property="og:image:height"        content="512" />
+
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <style>
             .over-all {
@@ -246,6 +248,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>        
         <script>
             var searching = false;
+            var cookieName = "calorie-calculator";
 
             window.onload = function(){ 
                 document.getElementById("searchCalorieNinja").setAttribute("src", calorieninja);
@@ -275,6 +278,53 @@
                     copycalories();
                 })                
             }
+
+            var readCookieValue = function(){
+                var cookiestr = document.cookie.match('(^|;)\\s*' + cookieName + '\\s*=\\s*([^;]+)');
+                return cookiestr ? unescape(cookiestr.pop()): '{}';
+            }
+
+            var getCookieValue = function(key, defaultVal){
+                
+                var cookiestr = readCookieValue();
+                var cookieobj = {};
+                if(cookiestr)
+                {
+                        try {
+                        cookieobj = JSON.parse(cookiestr);
+                    }
+                    catch (e) { 
+                        cookieobj = {};
+                    }
+                }
+                var cookievalue = cookieobj[key];
+                if(cookievalue || cookievalue == 0)
+                {
+                    var cookienum = parseInt(cookievalue);
+                    return (!isNaN(cookienum))? cookienum : cookievalue;
+                }
+                else
+                {
+                    setCookieValue(key, defaultVal);
+                    return defaultVal;
+                }
+            };
+
+            var setCookieValue = function(key, val){
+                var cookiestr = document.cookie;
+                var cookieobj = {};
+                if(cookiestr)
+                {
+                    cookieobj = JSON.parse(readCookieValue());
+                }
+                cookieobj[key] = val;
+
+                var expirationDate = new Date();
+                var tenYears = 365 * 10 * 24 * 60 * 60 * 1000;
+                expirationDate.setTime(expirationDate.getTime() + tenYears);
+                var expires = "expires="+expirationDate.toUTCString();                
+                document.cookie = cookieName + "=" + escape(JSON.stringify(cookieobj)) + ";" + expires + ";";
+            }            
 
             function recalculateform()
             {
