@@ -117,7 +117,7 @@
                 background-color: lightskyblue !important;
             }
 
-            #copylink
+            .copylink
             {
                 top: 2px;
                 position: relative;
@@ -137,10 +137,24 @@
     </head>
     <body class="bg-dark">
         <div id="main" class="over-all bg-dark text-light">
+            <div class="container"><div class="row justify-content-md-center"><div class="col-lg-7 col-xl-7 col-12">
             <h1><img id="titleLogo"> Calories Calculator</h1>
             <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
                 Total calories: <span id="totalCaloriesInTable">0</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="copylink" data-toggle="popover"  data-content="Copied to clipboard"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="copylink" class="copylink" data-toggle="popover"  data-content="Copied to clipboard"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+
+                <svg  data-toggle="modal" data-target="#exampleModalCenter" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" class="copylink" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                     viewBox="0 0 28.555 28.555" style="enable-background:new 0 0 28.555 28.555;"
+                        xml:space="preserve">
+                    <g>
+                        <g>
+                            <path d="M13.386,13.482V0.094c-0.001,0-0.002,0-0.003,0C5.99,0.094,0,6.086,0,13.478c0,3.703,1.503,7.056,3.934,9.478l9.473-9.473
+                                H13.386z"/>
+                            <path d="M5.062,24.553c2.422,2.413,5.761,3.907,9.45,3.907c7.39,0,13.382-5.99,13.384-13.38h-13.36L5.062,24.553z"/>
+                            <path d="M15.173,0.094v13.388h13.382v-0.004C28.555,6.088,22.562,0.097,15.173,0.094z"/>
+                        </g>
+                    </g>
+                    </svg>
               </div>
             <div>
                 <button type="button" class="btn btn-success"  id="btnAdd">
@@ -163,8 +177,10 @@
                       </tr>
                   </table>                
             </div>
+        </div></div></div>
         </div>
         <div id="editor" class="over-all bg-dark text-light hidden">
+            <div class="container"><div class="row justify-content-md-center"><div class="col-lg-7 col-xl-7 col-12">
             <div id="btnBack" class="linkcell">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="back-icon" width="22px" height="22px"><path d="M0 0h24v24H0z" fill="none"/><path d="M21 11H6.83l3.58-3.59L9 6l-6 6 6 6 1.41-1.41L6.83 13H21z"/></svg>
                 Go back
@@ -242,7 +258,30 @@
                 </div>
 
               </form>
+              </div></div></div>
         </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>        
