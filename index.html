@@ -117,7 +117,7 @@
                 background-color: lightskyblue !important;
             }
 
-            .copylink
+            .topbarlink
             {
                 top: 2px;
                 position: relative;
@@ -126,6 +126,7 @@
                 width: 18px;
                 height: 18px;
                 cursor: pointer;
+                margin-left: 20px;
             }
 
             #titleLogo {
@@ -141,9 +142,9 @@
             <h1><img id="titleLogo"> Calories Calculator</h1>
             <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
                 Total calories: <span id="totalCaloriesInTable">0</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="copylink" class="copylink" data-toggle="popover"  data-content="Copied to clipboard"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="copylink" class="topbarlink" data-toggle="popover"  data-content="Copied to clipboard"><path d="M0 0h24v24H0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
 
-                <svg  data-toggle="modal" data-target="#exampleModalCenter" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" class="copylink" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                <svg  data-toggle="modal" data-target="#exampleModalCenter" version="1.1" id="divide" xmlns="http://www.w3.org/2000/svg" class="topbarlink" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                      viewBox="0 0 28.555 28.555" style="enable-background:new 0 0 28.555 28.555;"
                         xml:space="preserve">
                     <g>
@@ -408,12 +409,13 @@
                     var txtCalsPer100g = document.getElementById("txtCalsPer100g");
                     var itemName = document.getElementById("txtItemName").value;
                     var ninjaicon = document.getElementById("searchCalorieNinja");
-                    ninjaicon.classList.add("searching");
-                    txtCalsPer100g.classList.add("txt-searching");
-                    txtCalsPer100g.value = "0000000000";
 
                     if(itemName)
                     {
+                        ninjaicon.classList.add("searching");
+                        txtCalsPer100g.classList.add("txt-searching");
+                        txtCalsPer100g.value = "0000000000";
+
                         itemName += " 100g";
                         $.ajax({
                             method: 'GET',
@@ -442,6 +444,10 @@
                                 recalculateform();
                             }
                         });
+                    }
+                    else
+                    {
+                        searching = false;
                     }
                 }
             }
