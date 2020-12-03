@@ -60,12 +60,14 @@
                 margin: 10px 10px 10px 0px;
             }
 
+            
             #btnBack
             {
-                padding: 20px 0;
+                padding-bottom: 15px;
             }
+            
 
-            #main, #editor 
+            #main
             {
                 padding: 20px 2%;
             }
@@ -129,11 +131,35 @@
                 margin-left: 20px;
             }
 
+            /*
             #titleLogo {
                 height: 35px;
                 position: relative;
                 top: -5px;
+            }*/
+
+
+            h1 {
+                /* Extra small devices (phones, less than 768px) */
+                   font-size: 30px;
             }
+            h1 > img 
+            {
+                height: 30px;
+                position: relative;
+                top: -5px;
+            }
+
+            @media (min-width: 768px) {
+                h1 {
+                    font-size: 35px;
+                }
+
+                h1 > img 
+                {
+                    height: 35px;                
+                }
+            }                  
         </style>
     </head>
     <body class="bg-dark">
@@ -196,9 +222,7 @@
                   <img  id="searchCalorieNinja" class="linkcell shadowed" />
                 </div>
                   </div>
-                  <small id="txtItemNameHelp" class="form-text text-muted">
-                    Enter an item name, if it's already in the system, calories will auto-fill
-                  </small>                  
+            
                 </div>
                 <div class="form-group">
                     <img id="bbearch" class="linkcell shadowed" />
@@ -207,23 +231,17 @@
                 <div class="form-group">
                     <label for="txtCalculatedCalories">Calculated calories (automatic)</label>
                     <input type="text" class="form-control calculated" id="txtCalculatedCalories" placeholder="0"  readonly disabled>
-                    <small id="txtItemNameHelp" class="form-text text-muted">
-                      Calories for this item will be calculated here
-                    </small>                   
+                 
                   </div>                
                 <div class="form-group">
                   <label id="lblCalsPer100g" for="txtCalsPer100g">Calories per 100g</label>
                   <input type="number" class="form-control" id="txtCalsPer100g" placeholder="0">
-                  <small id="txtCalsPer100gHelp" class="form-text text-muted">
-                    Enter calories per 100g for this item
-                  </small>                   
+                 
                 </div>
                 <div class="form-group">
                     <label for="txtWeight">Weight</label>
                     <input type="number" class="form-control" id="txtWeight" placeholder="0">
-                    <small id="txtItemNameHelp" class="form-text text-muted">
-                      Enter weight of this item
-                    </small>                   
+                  
                 </div>
                 <div class="form-group">
                     <label for="txtBaseWeight">Base calculation weight in grams</label>
@@ -238,9 +256,7 @@
                         </button>
                         </div>                      
                     </div>
-                    <small id="txtBaseWeightHelp" class="form-text text-muted">
-                      If the calorie measurement is not per 100g, enter the rght number here. Then click the button to convert the measure to 100g.
-                    </small>     
+   
                 </div>
 
                 <div class="form-row">
