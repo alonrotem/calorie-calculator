@@ -432,7 +432,6 @@
                     data.baseWeight = 100;
                 }
                 document.getElementById("lblCalsPer100g").textContent = "Calories per " + data.baseWeight + "g";
-                document.getElementById("txtCalsPer100gHelp").textContent = "Enter calories per " + data.baseWeight + "g for this item";
                 var calculated  = 0;
                 calculated = parseInt(data.calsPer100g * (data.weight / data.baseWeight));
                 if(isNaN(calculated))
